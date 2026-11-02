@@ -1,24 +1,37 @@
 {% extends "base.html" %}
 
-{% block title %}Notes{% endblock %}
+{% block title %}My Tasks{% endblock %}
 
-{% block content %} 
-<h1 align="center">Your Notes</h1>
-<ul class="list-group list-group-flush" id="notes">
-  {% for note in user.notes %}
-    <li class="list-group-item">
-        {{ note.data }}
-        <button type="button" class="close" onclick="deleteNote({{ note.id }})" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-    </li>
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mt-4 mb-3">
+  <h1>My Tasks</h1>
+  <a class="btn btn-primary" href="{{ url_for('views.create_task') }}">+ New Task</a>
+</div>
+
+{% if tasks %}
+<ul class="list-group" id="tasks">
+  {% for task in tasks %}
+  <li class="list-group-item d-flex justify-content-between align-items-start flex-wrap">
+    <div class="mr-3">
+      <h5 class="mb-1 {% if task.status == 'completed' %}text-muted text-decoration-line-through{% endif %}">{{ task.title }}</h5>
+      {% if task.description %}<p class="mb-1 text-muted">{{ task.description }}</p>{% endif %}
+      <small>
+        {% if task.due_date %}Due {{ task.due_date.isoformat() }}{% else %}No due date{% endif %}
+        {% if task.is_overdue %}<span class="badge badge-danger ml-1">Overdue</span>{% endif %}
+      </small>
+    </div>
+    <div class="d-flex align-items-center">
+      <span class="badge badge-{{ {'low': 'success', 'medium': 'warning', 'high': 'danger'}[task.priority] }} mr-2 priority">{{ task.priority|capitalize }}</span>
+      <span class="badge badge-{{ {'pending': 'secondary', 'in_progress': 'info', 'completed': 'success'}[task.status] }} mr-2 status">{{ task.status|replace('_', ' ')|capitalize }}</span>
+      <a class="btn btn-sm btn-outline-secondary mr-2" href="{{ url_for('views.edit_task', task_id=task.id) }}">Edit</a>
+      <form method="POST" action="{{ url_for('views.delete_task', task_id=task.id) }}" onsubmit="return confirm('Delete this task?');">
+        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+      </form>
+    </div>
+  </li>
   {% endfor %}
 </ul>
-<form method="POST">
-    <textarea name="note" id="note" class="form-control"></textarea>
-    <div align="center">
-        <br/>
-        <button type="submit" class="btn btn-primary">Add Note</button>
-    </div>
-</form>
+{% else %}
+<p class="text-center text-muted mt-5">No tasks yet. Create your first one.</p>
+{% endif %}
 {% endblock %}

@@ -1,121 +1,95 @@
+# flask-taskflow
 
-# Flask Learn App
-
-A small, beginner-friendly Flask web application built to learn and demonstrate the basic building blocks of a Flask project: routing, templates, static assets, simple authentication flow, and a lightweight database. This repository contains the source code, templates, static files and an example SQLite database under `instance/`.
+An enhanced Flask-based task management application featuring task prioritization, deadline tracking, dashboard analytics and user authentication.
 
 ---
 
-## Features
+## About this fork
 
-- Simple authentication pages: signup and login (with example flows)
-- Modular project structure using a `website` package
-- Jinja2 templates for layout and pages (`base.html`, `home.html`, `login.html`, `signup.html`)
-- Static JS and CSS support in `static/` (example `script.js` included)
-- Lightweight SQLite database stored in `instance/database.db` for local development
+This is my own fork of [23f2003608/Flask-learn-app](https://github.com/23f2003608/Flask-learn-app), a small beginner Flask project with signup, login and a notes page.
+
+The fork turns that notes app into a task manager. Everything listed under **What I added** below is my own work on this fork. It is not a contribution to, and has not been merged into, the original project.
+
+### What I added
+
+- Replaced the notes model and pages with a `Task` model (title, description, priority, status, due date, owner)
+- Task CRUD: create, edit and delete tasks from the web UI, with per-user ownership checks (users cannot see or change each other's tasks)
+- Priority levels: Low, Medium, High
+- Status tracking: Pending, In Progress, Completed
+- Due dates, with an "Overdue" badge on open tasks past their deadline
+- Input validation with flash messages on the forms
+- Test suite (pytest) covering the task features and ownership rules
+- Fixed a signup bug: a newly created account is now logged in (previously the code passed the wrong variable to `login_user`)
+- Configurable `SECRET_KEY` through the `SECRET_KEY` environment variable
+
+### Roadmap
+
+Built in phases, so each one can be tested before the next starts:
+
+1. **Done:** Task CRUD, priority levels, status tracking, due dates
+2. **Next:** Search and filter by name, priority and status
+3. **Then:** Dashboard with task statistics (Chart.js charts)
+4. **Later:** Dark mode toggle
 
 ---
 
 ## Tech stack
 
-- Python 3.8+ (should work on newer 3.x versions)
-- Flask
-- SQLite (for development)
+- Python 3 with Flask 3 and Flask-Login
+- Flask-SQLAlchemy with SQLite (`instance/database.db`)
+- Jinja2 templates with Bootstrap 4
+- pytest for tests
 
-See `requirements.txt` for the exact Python dependencies used by the project.
-
----
-
-## Repository structure
-
-Top-level layout (important files/folders):
-
-- `main.py` — application entrypoint
-- `requirements.txt` — Python dependencies
-- `instance/` — contains `database.db` (local SQLite database)
-- `website/` — Flask package with app factory and modules
-	- `__init__.py`
-	- `auth.py` — authentication routes and logic
-	- `models.py` — data models or database helpers
-	- `views.py` — other application routes
-	- `templates/` — Jinja2 templates (`base.html`, `home.html`, `login.html`, `signup.html`)
-	- `static/` — static assets (`script.js`, CSS, images)
-
-This layout keeps UI, routes, and configuration organized and easy to extend.
+See `requirements.txt` for runtime dependencies and `requirements-dev.txt` for test dependencies.
 
 ---
 
-## Quick start (macOS / zsh)
+## Project structure
 
-1. Clone the repository (if you haven't already):
+- `main.py` — entrypoint that creates the app
+- `website/__init__.py` — app factory, database setup, login manager
+- `website/models.py` — `User` and `Task` models, priority and status choices
+- `website/views.py` — task routes (list, create, edit, delete)
+- `website/auth.py` — signup, login and logout routes
+- `website/templates/` — `base.html`, `home.html` (task list), `task_form.html` (create and edit), `login.html`, `signup.html`
+- `tests/` — pytest suite
 
-```bash
-git clone <your-repo-url>
-cd Flask-learn-app
-```
+---
 
-2. Create and activate a virtual environment (recommended):
+## Setup
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-3. Install dependencies:
+Requires Python 3.9 or newer.
 
 ```bash
+python -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-```
-
-4. Ensure the `instance/` folder exists and the example database is present. If you don't have a database yet, the app may create one for you on first run or you can create it manually depending on how `models.py` is implemented.
-
-5. Run the app:
-
-```bash
-# set the Flask entrypoint (macOS / zsh)
-export FLASK_APP=main.py
-export FLASK_ENV=development
-flask run
-
-# or run directly with python
 python main.py
 ```
 
-Open http://127.0.0.1:5000 in your browser.
+Open http://127.0.0.1:5000, sign up, and start adding tasks. The SQLite database is created automatically in `instance/` on first run.
+
+To set a real secret key, export `SECRET_KEY` before running:
+
+```bash
+export SECRET_KEY="a-long-random-string"
+```
+
+### Running the tests
+
+```bash
+pip install -r requirements-dev.txt
+pytest
+```
 
 ---
 
-## Routes (common pages)
+## Screenshots
 
-These are the typical routes you will find in this repository. Your exact route names may vary slightly depending on how `views.py` and `auth.py` are implemented:
+_To be added once the UI is finished._
 
-- `/` — Home page (`home.html`)
-- `/login` — Login page (`login.html`)
-- `/signup` — Signup / register page (`signup.html`)
-- `/logout` — Logout action
-
-Explore `website/views.py` and `website/auth.py` for the concrete implementations.
-
----
-
-## Configuration & notes
-
-- Secrets and production configuration should never be committed. Keep instance-specific or secret values in environment variables or an `instance/config.py` which is excluded from version control.
-- For production, do not use the built-in Flask server. Use a production WSGI server like Gunicorn or uWSGI behind a reverse proxy.
-- If you add migrations or change the model, consider using Flask-Migrate / Alembic for consistent database schema management.
-
-Recommended `.gitignore` entries:
-
-```
-instance/
-__pycache__/
-.venv/
-.env
-*.pyc
-```
 ---
 
 ## Acknowledgements
 
-This project was created as a learning exercise to understand Flask fundamentals: routing, templates, and simple data persistence. Keep exploring Flask's official docs for more advanced patterns: https://flask.palletsprojects.com/
-
----
+Based on the beginner project [Flask-learn-app](https://github.com/23f2003608/Flask-learn-app). Flask documentation: https://flask.palletsprojects.com/

@@ -25,7 +25,8 @@
             <div class="navbar-nav">
                 {% if current_user.is_authenticated %}
                 <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
-                <a class="nav-item nav-link" id="home" href="/">Home</a>
+                <a class="nav-item nav-link" id="home" href="/">My Tasks</a>
+                <a class="nav-item nav-link" id="new-task" href="/tasks/new">New Task</a>
                 {% else %}
                 <a class="nav-item nav-link" id="login" href="/login">Login</a>
                 <a class="nav-item nav-link" id="signup" href="/signup">Signup</a>
@@ -73,9 +74,5 @@
       integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
       crossorigin="anonymous"
     ></script> 
-    <script
-        type="text/javascript"
-        src="{{ url_for('static', filename='script.js') }}"
-    ></script>
 </body>
 </html>
