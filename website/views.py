@@ -4,6 +4,7 @@ from flask import Blueprint, abort, flash, redirect, render_template, request, u
 from flask_login import login_required, current_user
 from . import db
 from .models import Task, PRIORITIES, STATUSES
+from .stats import task_stats
 
 views = Blueprint('views', __name__)
 
@@ -74,6 +75,13 @@ def home():
     filters = {'q': search, 'priority': priority, 'status': status}
     return render_template("home.html", user=current_user, tasks=tasks,
                            filters=filters, priorities=PRIORITIES, statuses=STATUSES)
+
+
+@views.route('/dashboard')
+@login_required
+def dashboard():
+    stats = task_stats(current_user.id)
+    return render_template("dashboard.html", stats=stats)
 
 
 @views.route('/tasks/new', methods=['GET', 'POST'])

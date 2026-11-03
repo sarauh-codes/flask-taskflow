@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h1 class="mt-4 mb-4">Dashboard</h1>
+
+<div class="row mb-4">
+  <div class="col-6 col-md-3 mb-3">
+    <div class="card text-center h-100"><div class="card-body">
+      <div class="text-muted small">Total tasks</div>
+      <div class="h2 mb-0" id="stat-total">{{ stats.total }}</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-md-3 mb-3">
+    <div class="card text-center h-100"><div class="card-body">
+      <div class="text-muted small">Completed</div>
+      <div class="h2 mb-0" id="stat-completed">{{ stats.completed }}</div>
+      <div class="small text-muted">{{ stats.completion_rate }}% done</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-md-3 mb-3">
+    <div class="card text-center h-100"><div class="card-body">
+      <div class="text-muted small">In progress</div>
+      <div class="h2 mb-0" id="stat-in-progress">{{ stats.by_status.in_progress }}</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-md-3 mb-3">
+    <div class="card text-center h-100"><div class="card-body">
+      <div class="text-muted small">Overdue</div>
+      <div class="h2 mb-0 text-danger" id="stat-overdue">{{ stats.overdue }}</div>
+    </div></div>
+  </div>
+</div>
+
+{% if stats.total == 0 %}
+<p class="text-center text-muted">No tasks yet. <a href="{{ url_for('views.create_task') }}">Create one</a> to see your stats here.</p>
+{% else %}
+<div class="row">
+  <div class="col-md-6 mb-4">
+    <canvas id="statusChart" aria-label="Tasks by status" role="img"></canvas>
+  </div>
+  <div class="col-md-6 mb-4">
+    <canvas id="priorityChart" aria-label="Tasks by priority" role="img"></canvas>
+  </div>
+</div>
+{% endif %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+  const statusCounts = {{ stats.by_status|tojson }};
+  const priorityCounts = {{ stats.by_priority|tojson }};
+
+  if (document.getElementById('statusChart')) {
+    new Chart(document.getElementById('statusChart'), {
+      type: 'doughnut',
+      data: {
+        labels: Object.keys(statusCounts).map(s => s.replace('_', ' ')),
+        datasets: [{ data: Object.values(statusCounts), backgroundColor: ['#6c757d', '#17a2b8', '#28a745'] }]
+      },
+      options: { plugins: { title: { display: true, text: 'Tasks by status' } } }
+    });
+
+    new Chart(document.getElementById('priorityChart'), {
+      type: 'bar',
+      data: {
+        labels: Object.keys(priorityCounts).map(p => p.charAt(0).toUpperCase() + p.slice(1)),
+        datasets: [{ label: 'Tasks', data: Object.values(priorityCounts), backgroundColor: ['#28a745', '#ffc107', '#dc3545'] }]
+      },
+      options: {
+        plugins: { title: { display: true, text: 'Tasks by priority' }, legend: { display: false } },
+        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+      }
+    });
+  }
+</script>
+{% endblock %}

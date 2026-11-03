@@ -18,6 +18,7 @@ The fork turns that notes app into a task manager. Everything listed under **Wha
 - Status tracking: Pending, In Progress, Completed
 - Due dates, with an "Overdue" badge on open tasks past their deadline
 - Search tasks by name and filter by priority and status (combinable)
+- Dashboard with totals, completion rate, overdue count, and Chart.js charts by status and priority
 - Input validation with flash messages on the forms
 - Test suite (pytest) covering the task features and ownership rules
 - Fixed a signup bug: a newly created account is now logged in (previously the code passed the wrong variable to `login_user`)
@@ -29,8 +30,8 @@ Built in phases, so each one can be tested before the next starts:
 
 1. **Done:** Task CRUD, priority levels, status tracking, due dates
 2. **Done:** Search by name, filter by priority and status
-3. **Next:** Dashboard with task statistics (Chart.js charts)
-4. **Later:** Dark mode toggle
+3. **Done:** Dashboard with task statistics (Chart.js charts)
+4. **Next:** Dark mode toggle
 
 ---
 
@@ -39,6 +40,7 @@ Built in phases, so each one can be tested before the next starts:
 - Python 3 with Flask 3 and Flask-Login
 - Flask-SQLAlchemy with SQLite (`instance/database.db`)
 - Jinja2 templates with Bootstrap 4
+- Chart.js 4 for dashboard charts (loaded from cdnjs)
 - pytest for tests
 
 See `requirements.txt` for runtime dependencies and `requirements-dev.txt` for test dependencies.
@@ -50,7 +52,8 @@ See `requirements.txt` for runtime dependencies and `requirements-dev.txt` for t
 - `main.py` — entrypoint that creates the app
 - `website/__init__.py` — app factory, database setup, login manager
 - `website/models.py` — `User` and `Task` models, priority and status choices
-- `website/views.py` — task routes (list, create, edit, delete)
+- `website/views.py` — task routes (list, create, edit, delete) and the dashboard
+- `website/stats.py` — per-user task statistics for the dashboard
 - `website/auth.py` — signup, login and logout routes
 - `website/templates/` — `base.html`, `home.html` (task list), `task_form.html` (create and edit), `login.html`, `signup.html`
 - `tests/` — pytest suite
