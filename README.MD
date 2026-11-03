@@ -19,6 +19,7 @@ The fork turns that notes app into a task manager. Everything listed under **Wha
 - Due dates, with an "Overdue" badge on open tasks past their deadline
 - Search tasks by name and filter by priority and status (combinable)
 - Dashboard with totals, completion rate, overdue count, and Chart.js charts by status and priority
+- Light/dark theme toggle in the navbar; the choice is remembered in the browser
 - Input validation with flash messages on the forms
 - Test suite (pytest) covering the task features and ownership rules
 - Fixed a signup bug: a newly created account is now logged in (previously the code passed the wrong variable to `login_user`)
@@ -31,7 +32,7 @@ Built in phases, so each one can be tested before the next starts:
 1. **Done:** Task CRUD, priority levels, status tracking, due dates
 2. **Done:** Search by name, filter by priority and status
 3. **Done:** Dashboard with task statistics (Chart.js charts)
-4. **Next:** Dark mode toggle
+4. **Done:** Dark mode toggle
 
 ---
 
@@ -54,6 +55,7 @@ See `requirements.txt` for runtime dependencies and `requirements-dev.txt` for t
 - `website/models.py` — `User` and `Task` models, priority and status choices
 - `website/views.py` — task routes (list, create, edit, delete) and the dashboard
 - `website/stats.py` — per-user task statistics for the dashboard
+- `website/static/theme.css`, `website/static/theme.js` — dark mode styles and toggle
 - `website/auth.py` — signup, login and logout routes
 - `website/templates/` — `base.html`, `home.html` (task list), `task_form.html` (create and edit), `login.html`, `signup.html`
 - `tests/` — pytest suite

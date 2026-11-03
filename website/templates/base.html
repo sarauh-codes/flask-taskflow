@@ -14,6 +14,14 @@
       href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
       crossorigin="anonymous"
     />
+    <link rel="stylesheet" href="{{ url_for('static', filename='theme.css') }}" />
+    <script>
+      try {
+        if (localStorage.getItem('theme') === 'dark') {
+          document.documentElement.classList.add('dark-mode');
+        }
+      } catch (e) {}
+    </script>
     <title>{% block title %}Home{% endblock %}</title>
 </head>
 <body>
@@ -34,6 +42,7 @@
                 {% endif %}
             </div>
         </div>
+        <button type="button" class="btn btn-sm btn-outline-light ml-lg-auto my-2 my-lg-0" id="theme-toggle">Dark mode</button>
     </nav>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -74,6 +83,7 @@
       src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
       integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
       crossorigin="anonymous"
-    ></script> 
+    ></script>
+    <script src="{{ url_for('static', filename='theme.js') }}" defer></script>
 </body>
 </html>

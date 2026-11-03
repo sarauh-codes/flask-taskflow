@@ -51,6 +51,11 @@
   const statusCounts = {{ stats.by_status|tojson }};
   const priorityCounts = {{ stats.by_priority|tojson }};
 
+  if (document.documentElement.classList.contains('dark-mode')) {
+    Chart.defaults.color = '#e6e6e6';
+    Chart.defaults.borderColor = '#333';
+  }
+
   if (document.getElementById('statusChart')) {
     new Chart(document.getElementById('statusChart'), {
       type: 'doughnut',
