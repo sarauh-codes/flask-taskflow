@@ -54,10 +54,26 @@ def _get_user_task(task_id):
 @views.route('/')
 @login_required
 def home():
-    tasks = (Task.query.filter_by(user_id=current_user.id)
-             .order_by(Task.due_date.is_(None), Task.due_date, Task.id)
-             .all())
-    return render_template("home.html", user=current_user, tasks=tasks)
+    search = (request.args.get('q') or '').strip()
+    priority = request.args.get('priority') or ''
+    status = request.args.get('status') or ''
+
+    query = Task.query.filter_by(user_id=current_user.id)
+    if search:
+        query = query.filter(Task.title.ilike(f'%{search}%'))
+    if priority in PRIORITIES:
+        query = query.filter_by(priority=priority)
+    else:
+        priority = ''
+    if status in STATUSES:
+        query = query.filter_by(status=status)
+    else:
+        status = ''
+
+    tasks = query.order_by(Task.due_date.is_(None), Task.due_date, Task.id).all()
+    filters = {'q': search, 'priority': priority, 'status': status}
+    return render_template("home.html", user=current_user, tasks=tasks,
+                           filters=filters, priorities=PRIORITIES, statuses=STATUSES)
 
 
 @views.route('/tasks/new', methods=['GET', 'POST'])

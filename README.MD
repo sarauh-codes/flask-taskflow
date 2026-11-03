@@ -17,6 +17,7 @@ The fork turns that notes app into a task manager. Everything listed under **Wha
 - Priority levels: Low, Medium, High
 - Status tracking: Pending, In Progress, Completed
 - Due dates, with an "Overdue" badge on open tasks past their deadline
+- Search tasks by name and filter by priority and status (combinable)
 - Input validation with flash messages on the forms
 - Test suite (pytest) covering the task features and ownership rules
 - Fixed a signup bug: a newly created account is now logged in (previously the code passed the wrong variable to `login_user`)
@@ -27,8 +28,8 @@ The fork turns that notes app into a task manager. Everything listed under **Wha
 Built in phases, so each one can be tested before the next starts:
 
 1. **Done:** Task CRUD, priority levels, status tracking, due dates
-2. **Next:** Search and filter by name, priority and status
-3. **Then:** Dashboard with task statistics (Chart.js charts)
+2. **Done:** Search by name, filter by priority and status
+3. **Next:** Dashboard with task statistics (Chart.js charts)
 4. **Later:** Dark mode toggle
 
 ---

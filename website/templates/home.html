@@ -8,6 +8,35 @@
   <a class="btn btn-primary" href="{{ url_for('views.create_task') }}">+ New Task</a>
 </div>
 
+<form method="GET" action="{{ url_for('views.home') }}" class="form-row align-items-end mb-4" id="task-filters">
+  <div class="form-group col-md-4 mb-2">
+    <label for="q">Search by name</label>
+    <input type="search" class="form-control" id="q" name="q" value="{{ filters.q }}" placeholder="Task title">
+  </div>
+  <div class="form-group col-md-2 mb-2">
+    <label for="priority-filter">Priority</label>
+    <select class="form-control" id="priority-filter" name="priority">
+      <option value="">All</option>
+      {% for p in priorities %}
+      <option value="{{ p }}" {% if filters.priority == p %}selected{% endif %}>{{ p|capitalize }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="form-group col-md-2 mb-2">
+    <label for="status-filter">Status</label>
+    <select class="form-control" id="status-filter" name="status">
+      <option value="">All</option>
+      {% for s in statuses %}
+      <option value="{{ s }}" {% if filters.status == s %}selected{% endif %}>{{ s|replace('_', ' ')|capitalize }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="form-group col-md-4 mb-2">
+    <button type="submit" class="btn btn-outline-primary">Filter</button>
+    <a class="btn btn-link" href="{{ url_for('views.home') }}">Clear</a>
+  </div>
+</form>
+
 {% if tasks %}
 <ul class="list-group" id="tasks">
   {% for task in tasks %}
@@ -32,6 +61,10 @@
   {% endfor %}
 </ul>
 {% else %}
+{% if filters.q or filters.priority or filters.status %}
+<p class="text-center text-muted mt-5">No tasks match these filters.</p>
+{% else %}
 <p class="text-center text-muted mt-5">No tasks yet. Create your first one.</p>
+{% endif %}
 {% endif %}
 {% endblock %}
