@@ -74,7 +74,8 @@ def home():
     tasks = query.order_by(Task.due_date.is_(None), Task.due_date, Task.id).all()
     filters = {'q': search, 'priority': priority, 'status': status}
     return render_template("home.html", user=current_user, tasks=tasks,
-                           filters=filters, priorities=PRIORITIES, statuses=STATUSES)
+                           filters=filters, priorities=PRIORITIES, statuses=STATUSES,
+                           stats=task_stats(current_user.id))
 
 
 @views.route('/dashboard')
@@ -130,6 +131,15 @@ def edit_task(task_id):
         }
     return render_template("task_form.html", task=task, values=values,
                            priorities=PRIORITIES, statuses=STATUSES)
+
+
+@views.route('/tasks/<int:task_id>/toggle', methods=['POST'])
+@login_required
+def toggle_task(task_id):
+    task = _get_user_task(task_id)
+    task.status = 'pending' if task.status == 'completed' else 'completed'
+    db.session.commit()
+    return redirect(url_for('views.home'))
 
 
 @views.route('/tasks/<int:task_id>/delete', methods=['POST'])

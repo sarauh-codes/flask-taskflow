@@ -3,17 +3,39 @@
 {% block title %}My Tasks{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mt-4 mb-3">
-  <h1>My Tasks</h1>
+<header class="page-head">
+  <div>
+    <h1>Hello, {{ user.first_name }}</h1>
+    <p>{% if stats.total - stats.completed == 0 %}You're all caught up.{% else %}You have {{ stats.total - stats.completed }} open {{ 'task' if stats.total - stats.completed == 1 else 'tasks' }}.{% endif %}</p>
+  </div>
   <a class="btn btn-primary" href="{{ url_for('views.create_task') }}">+ New Task</a>
-</div>
+</header>
 
-<form method="GET" action="{{ url_for('views.home') }}" class="form-row align-items-end mb-4" id="task-filters">
-  <div class="form-group col-md-4 mb-2">
+<section class="stat-row">
+  <div class="stat">
+    <span class="stat-label">Total tasks</span>
+    <span class="stat-value">{{ stats.total }}</span>
+  </div>
+  <div class="stat">
+    <span class="stat-label">Pending</span>
+    <span class="stat-value">{{ stats.by_status.pending }}</span>
+  </div>
+  <div class="stat">
+    <span class="stat-label">In progress</span>
+    <span class="stat-value">{{ stats.by_status.in_progress }}</span>
+  </div>
+  <div class="stat">
+    <span class="stat-label">Overdue</span>
+    <span class="stat-value{% if stats.overdue %} is-danger{% endif %}">{{ stats.overdue }}</span>
+  </div>
+</section>
+
+<form method="GET" action="{{ url_for('views.home') }}" class="filters" id="task-filters">
+  <div class="field field-search">
     <label for="q">Search by name</label>
     <input type="search" class="form-control" id="q" name="q" value="{{ filters.q }}" placeholder="Task title">
   </div>
-  <div class="form-group col-md-2 mb-2">
+  <div class="field">
     <label for="priority-filter">Priority</label>
     <select class="form-control" id="priority-filter" name="priority">
       <option value="">All</option>
@@ -22,7 +44,7 @@
       {% endfor %}
     </select>
   </div>
-  <div class="form-group col-md-2 mb-2">
+  <div class="field">
     <label for="status-filter">Status</label>
     <select class="form-control" id="status-filter" name="status">
       <option value="">All</option>
@@ -31,40 +53,47 @@
       {% endfor %}
     </select>
   </div>
-  <div class="form-group col-md-4 mb-2">
-    <button type="submit" class="btn btn-outline-primary">Filter</button>
+  <div class="field">
+    <button type="submit" class="btn btn-outline">Filter</button>
     <a class="btn btn-link" href="{{ url_for('views.home') }}">Clear</a>
   </div>
 </form>
 
 {% if tasks %}
-<ul class="list-group" id="tasks">
+<ul class="task-list" id="tasks">
   {% for task in tasks %}
-  <li class="list-group-item d-flex justify-content-between align-items-start flex-wrap">
-    <div class="mr-3">
-      <h5 class="mb-1 {% if task.status == 'completed' %}text-muted text-decoration-line-through{% endif %}">{{ task.title }}</h5>
-      {% if task.description %}<p class="mb-1 text-muted">{{ task.description }}</p>{% endif %}
-      <small>
-        {% if task.due_date %}Due {{ task.due_date.isoformat() }}{% else %}No due date{% endif %}
-        {% if task.is_overdue %}<span class="badge badge-danger ml-1">Overdue</span>{% endif %}
-      </small>
+  <li class="task-card{% if task.status == 'completed' %} is-done{% endif %}">
+    <form method="POST" action="{{ url_for('views.toggle_task', task_id=task.id) }}">
+      <button type="submit" class="check{% if task.status == 'completed' %} checked{% endif %}" aria-label="{{ 'Mark as pending' if task.status == 'completed' else 'Mark as completed' }}"></button>
+    </form>
+    <div class="task-body">
+      <h3 class="task-title">{{ task.title }}</h3>
+      {% if task.description %}<p class="task-desc">{{ task.description }}</p>{% endif %}
+      <div class="task-meta">
+        <span>{% if task.due_date %}Due {{ task.due_date.isoformat() }}{% else %}No due date{% endif %}</span>
+        {% if task.is_overdue %}<span class="pill pill-danger">Overdue</span>{% endif %}
+      </div>
     </div>
-    <div class="d-flex align-items-center">
-      <span class="badge badge-{{ {'low': 'success', 'medium': 'warning', 'high': 'danger'}[task.priority] }} mr-2 priority">{{ task.priority|capitalize }}</span>
-      <span class="badge badge-{{ {'pending': 'secondary', 'in_progress': 'info', 'completed': 'success'}[task.status] }} mr-2 status">{{ task.status|replace('_', ' ')|capitalize }}</span>
-      <a class="btn btn-sm btn-outline-secondary mr-2" href="{{ url_for('views.edit_task', task_id=task.id) }}">Edit</a>
+    <div class="task-tags">
+      <span class="pill pill-{{ task.priority }} priority">{{ task.priority|capitalize }}</span>
+      <span class="pill pill-{{ task.status }} status">{{ task.status|replace('_', ' ')|capitalize }}</span>
+    </div>
+    <div class="task-actions">
+      <a class="icon-btn" href="{{ url_for('views.edit_task', task_id=task.id) }}">Edit</a>
       <form method="POST" action="{{ url_for('views.delete_task', task_id=task.id) }}" onsubmit="return confirm('Delete this task?');">
-        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+        <button type="submit" class="icon-btn danger">Delete</button>
       </form>
     </div>
   </li>
   {% endfor %}
 </ul>
 {% else %}
-{% if filters.q or filters.priority or filters.status %}
-<p class="text-center text-muted mt-5">No tasks match these filters.</p>
-{% else %}
-<p class="text-center text-muted mt-5">No tasks yet. Create your first one.</p>
-{% endif %}
+<div class="empty">
+  {% if filters.q or filters.priority or filters.status %}
+  No tasks match these filters.
+  {% else %}
+  No tasks yet. Create your first one.
+  {% endif %}
+</div>
 {% endif %}
 {% endblock %}

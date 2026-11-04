@@ -13,7 +13,7 @@ def test_saved_theme_is_applied_before_paint(client):
 
 
 def test_theme_assets_are_served(client):
-    css = client.get('/static/theme.css')
+    css = client.get('/static/style.css')
     js = client.get('/static/theme.js')
 
     assert css.status_code == 200

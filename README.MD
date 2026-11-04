@@ -40,7 +40,7 @@ Built in phases, so each one can be tested before the next starts:
 
 - Python 3 with Flask 3 and Flask-Login
 - Flask-SQLAlchemy with SQLite (`instance/database.db`)
-- Jinja2 templates with Bootstrap 4
+- Jinja2 templates with a custom stylesheet (`website/static/style.css`)
 - Chart.js 4 for dashboard charts (loaded from cdnjs)
 - pytest for tests
 

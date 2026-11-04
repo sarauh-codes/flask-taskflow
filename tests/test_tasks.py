@@ -146,6 +146,30 @@ def test_edit_with_invalid_data_keeps_original(client, app):
     assert get_task(app, 'Write report') is not None
 
 
+def test_checkbox_toggles_between_completed_and_pending(client, app):
+    signup(client)
+    client.post('/tasks/new', data=task_form(status='pending'))
+    task_id = get_task(app, 'Write report')['id']
+
+    response = client.post(f'/tasks/{task_id}/toggle')
+    assert response.status_code == 302
+    assert get_task(app, 'Write report')['status'] == 'completed'
+
+    client.post(f'/tasks/{task_id}/toggle')
+    assert get_task(app, 'Write report')['status'] == 'pending'
+
+
+def test_cannot_toggle_another_users_task(client, app):
+    signup(client, email='owner@example.com')
+    client.post('/tasks/new', data=task_form(status='pending'))
+    task_id = get_task(app, 'Write report')['id']
+    logout(client)
+
+    signup(client, email='intruder@example.com')
+    assert client.post(f'/tasks/{task_id}/toggle').status_code == 404
+    assert get_task(app, 'Write report')['status'] == 'pending'
+
+
 def test_delete_task(client, app):
     signup(client)
     client.post('/tasks/new', data=task_form())

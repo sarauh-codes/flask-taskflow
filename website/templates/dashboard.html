@@ -3,44 +3,43 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<h1 class="mt-4 mb-4">Dashboard</h1>
+<header class="page-head">
+  <div>
+    <h1>Dashboard</h1>
+    <p>How your tasks are going.</p>
+  </div>
+</header>
 
-<div class="row mb-4">
-  <div class="col-6 col-md-3 mb-3">
-    <div class="card text-center h-100"><div class="card-body">
-      <div class="text-muted small">Total tasks</div>
-      <div class="h2 mb-0" id="stat-total">{{ stats.total }}</div>
-    </div></div>
+<section class="stat-row">
+  <div class="stat">
+    <span class="stat-label">Total tasks</span>
+    <span class="stat-value" id="stat-total">{{ stats.total }}</span>
   </div>
-  <div class="col-6 col-md-3 mb-3">
-    <div class="card text-center h-100"><div class="card-body">
-      <div class="text-muted small">Completed</div>
-      <div class="h2 mb-0" id="stat-completed">{{ stats.completed }}</div>
-      <div class="small text-muted">{{ stats.completion_rate }}% done</div>
-    </div></div>
+  <div class="stat">
+    <span class="stat-label">Completed</span>
+    <span class="stat-value" id="stat-completed">{{ stats.completed }}</span>
+    <span class="muted">{{ stats.completion_rate }}% done</span>
   </div>
-  <div class="col-6 col-md-3 mb-3">
-    <div class="card text-center h-100"><div class="card-body">
-      <div class="text-muted small">In progress</div>
-      <div class="h2 mb-0" id="stat-in-progress">{{ stats.by_status.in_progress }}</div>
-    </div></div>
+  <div class="stat">
+    <span class="stat-label">In progress</span>
+    <span class="stat-value" id="stat-in-progress">{{ stats.by_status.in_progress }}</span>
   </div>
-  <div class="col-6 col-md-3 mb-3">
-    <div class="card text-center h-100"><div class="card-body">
-      <div class="text-muted small">Overdue</div>
-      <div class="h2 mb-0 text-danger" id="stat-overdue">{{ stats.overdue }}</div>
-    </div></div>
+  <div class="stat">
+    <span class="stat-label">Overdue</span>
+    <span class="stat-value is-danger" id="stat-overdue">{{ stats.overdue }}</span>
   </div>
-</div>
+</section>
 
 {% if stats.total == 0 %}
-<p class="text-center text-muted">No tasks yet. <a href="{{ url_for('views.create_task') }}">Create one</a> to see your stats here.</p>
+<div class="empty">No tasks yet. <a href="{{ url_for('views.create_task') }}">Create one</a> to see your stats here.</div>
 {% else %}
-<div class="row">
-  <div class="col-md-6 mb-4">
+<div class="chart-grid">
+  <div class="card chart-card">
+    <h2>Tasks by status</h2>
     <canvas id="statusChart" aria-label="Tasks by status" role="img"></canvas>
   </div>
-  <div class="col-md-6 mb-4">
+  <div class="card chart-card">
+    <h2>Tasks by priority</h2>
     <canvas id="priorityChart" aria-label="Tasks by priority" role="img"></canvas>
   </div>
 </div>
@@ -52,8 +51,8 @@
   const priorityCounts = {{ stats.by_priority|tojson }};
 
   if (document.documentElement.classList.contains('dark-mode')) {
-    Chart.defaults.color = '#e6e6e6';
-    Chart.defaults.borderColor = '#333';
+    Chart.defaults.color = '#e9eaf3';
+    Chart.defaults.borderColor = '#2c2f42';
   }
 
   if (document.getElementById('statusChart')) {
@@ -61,19 +60,19 @@
       type: 'doughnut',
       data: {
         labels: Object.keys(statusCounts).map(s => s.replace('_', ' ')),
-        datasets: [{ data: Object.values(statusCounts), backgroundColor: ['#6c757d', '#17a2b8', '#28a745'] }]
+        datasets: [{ data: Object.values(statusCounts), backgroundColor: ['#8a8fa3', '#3b82f6', '#1f9d55'], borderWidth: 0 }]
       },
-      options: { plugins: { title: { display: true, text: 'Tasks by status' } } }
+      options: { plugins: { legend: { position: 'bottom' } } }
     });
 
     new Chart(document.getElementById('priorityChart'), {
       type: 'bar',
       data: {
         labels: Object.keys(priorityCounts).map(p => p.charAt(0).toUpperCase() + p.slice(1)),
-        datasets: [{ label: 'Tasks', data: Object.values(priorityCounts), backgroundColor: ['#28a745', '#ffc107', '#dc3545'] }]
+        datasets: [{ label: 'Tasks', data: Object.values(priorityCounts), backgroundColor: ['#1f9d55', '#d98a00', '#e5484d'], borderRadius: 8 }]
       },
       options: {
-        plugins: { title: { display: true, text: 'Tasks by priority' }, legend: { display: false } },
+        plugins: { legend: { display: false } },
         scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
       }
     });
